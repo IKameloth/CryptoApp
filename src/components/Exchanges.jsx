@@ -1,7 +1,7 @@
 import React from "react";
 import millify from "millify";
 import { Collapse, Row, Col, Typography, Avatar } from "antd";
-import { useGetExchangesQuery } from "../services/cryptoExchangesApi";
+import { useGetExchangesQuery } from "../services/cryptoApi";
 import Loader from "./Loader";
 import HTMLReactParser from "html-react-parser";
 
@@ -9,56 +9,57 @@ const { Text } = Typography;
 const { Panel } = Collapse;
 
 export default function Exchanges() {
-  const poto = useGetExchangesQuery();
+  const { data, isFetching } = useGetExchangesQuery();
 
-  console.log(poto);
+  const exchangesList = data?.data?.exchanges;
 
-  // const exchangesList = data?.data?.exchanges;
-
-  // if (isFetching) return <Loader />;
+  if (isFetching) return <Loader />;
 
   return (
-    <h1>asdad</h1>
-    // <>
-    //   <Row>
-    //     <Col span={6}>Exchanges</Col>
-    //     <Col span={6}>24h Trade Volume</Col>
-    //     <Col span={6}>Markets</Col>
-    //     <Col span={6}>Change</Col>
-    //   </Row>
-    //   <Row>
-    //     {exchangesList.map((exchange) => (
-    //       <Col span={24}>
-    //         <Collapse>
-    //           <Panel
-    //             key={exchange.id}
-    //             showArrow={false}
-    //             header={
-    //               <Row key={exchange.id}>
-    //                 <Col span={6}>
-    //                   <Text>
-    //                     <strong>{exchange.rank}</strong>
-    //                   </Text>
-    //                   <Avatar
-    //                     className="exchange-image"
-    //                     src={exchange.iconUrl}
-    //                   />
-    //                   <Text>
-    //                     <strong>{exchange.name}</strong>
-    //                   </Text>
-    //                 </Col>
-    //                 <Col span={6}>${millify(exchange.volume)}</Col>
-    //                 <Col span={6}>{millify(exchange.numberOfMarkets)}</Col>
-    //                 <Col span={6}>{millify(exchange.marketShare)}%</Col>
-    //               </Row>
-    //             }
-    //           >
-    //             {HTMLReactParser(exchange.description || "")}
-    //           </Panel>
-    //         </Collapse>
-    //       </Col>
-    //     ))}
-    //   </Row>
-    // </>
+    <>
+      <Row>
+        <Col span={6}>Exchanges</Col>
+        <Col span={6}>24h Trade Volume</Col>
+        <Col span={6}>Markets</Col>
+        <Col span={6}>Change</Col>
+      </Row>
+      <Row>
+        {exchangesList ? (
+          exchangesList.map((exchange) => (
+            <Col span={24}>
+              <Collapse>
+                <Panel
+                  key={exchange.id}
+                  showArrow={false}
+                  header={
+                    <Row key={exchange.id}>
+                      <Col span={6}>
+                        <Text>
+                          <strong>{exchange.rank}</strong>
+                        </Text>
+                        <Avatar
+                          className="exchange-image"
+                          src={exchange.iconUrl}
+                        />
+                        <Text>
+                          <strong>{exchange.name}</strong>
+                        </Text>
+                      </Col>
+                      <Col span={6}>${millify(exchange.volume)}</Col>
+                      <Col span={6}>{millify(exchange.numberOfMarkets)}</Col>
+                      <Col span={6}>{millify(exchange.marketShare)}%</Col>
+                    </Row>
+                  }
+                >
+                  {HTMLReactParser(exchange.description || "")}
+                </Panel>
+              </Collapse>
+            </Col>
+          ))
+        ) : (
+          <Text>Imposible conectar con API</Text>
+        )}
+      </Row>
+    </>
   );
 }
